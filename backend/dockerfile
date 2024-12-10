@@ -1,0 +1,20 @@
+# 1. Node.js base image 
+From node:18
+
+# 2. Set up the work diretory
+WORKDIR /usr/src/app
+
+# 3. copy package.json and package-lock.json 
+COPY package*.json ./
+
+# 4. install dependencies
+RUN npm install
+
+# 5. Copy project file
+COPY . .
+
+# 6. Exposed port
+EXPOSE 8080
+
+# 7.Execution
+CMD ["node", "server.js"]
