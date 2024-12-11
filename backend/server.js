@@ -19,6 +19,10 @@ app.get('/v1/api', (req, res)=>{
     res.json({message: 'server is running'});
 });
 
+const cors = require('cors');
+app.use(cors());
+
+
 app.listen(PORT, () => {
     console.log(`Server is running on Port: ${PORT}`); 
 });
@@ -33,3 +37,23 @@ app.get('/v1/api/db', async (req, res) => {
     }
 });
 
+app.get('/v1/api/counter', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT count_value FROM counter WHERE id = 1');
+        res.json({ count: result.rows[0].count_value });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Failed to fetch count', error: err.message });
+    }
+});
+
+app.post('/v1/api/counter', async (req, res) => {
+    try {
+        await pool.query('UPDATE counter SET count_value = count_value + 1 WHERE id = 1');
+        const result = await pool.query('SELECT count_value FROM counter WHERE id = 1');
+        res.json({ message: 'Count updated successfully', count: result.rows[0].count_value });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Failed to update count', error: err.message });
+    }
+});
