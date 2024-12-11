@@ -39,13 +39,20 @@ app.get('/v1/api/db', async (req, res) => {
 
 app.get('/v1/api/counter', async (req, res) => {
     try {
-        const result = await pool.query('SELECT count_value FROM counter WHERE id = 1');
-        res.json({ count: result.rows[0].count_value });
+      const result = await pool.query('SELECT count_value FROM counter WHERE id = 1');
+      console.log(result.rows); // 디버깅용 로그
+  
+      if (result.rows.length === 0) {
+        return res.status(404).json({ message: 'Counter not found' });
+      }
+  
+      res.json({ count_value: result.rows[0].count_value });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Failed to fetch count', error: err.message });
+      console.error(err);
+      res.status(500).json({ message: 'Database query failed', error: err.message });
     }
-});
+  });
+  
 
 app.post('/v1/api/counter', async (req, res) => {
     try {
